@@ -1,0 +1,10 @@
+[Desktop Entry]
+Type=Application
+Name=Rampage Blink
+GenericName=Gaming Mouse Controller
+Comment=Rampage Blink (Wuxi Instant A825) Native Hardware Controller
+Exec=rampage-blink
+Icon=blink-mouse
+Terminal=false
+Categories=Settings;HardwareSettings;Utility;
+Keywords=mouse;rampage;blink;rgb;dpi;gaming;

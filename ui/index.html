@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>RAMPAGE BLINK // GAMING MOUSE DRIVER</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=JetBrains+Mono:wght@400;500;700&family=Space+Grotesk:wght@600;700;800&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="style.css">
+  <script src="qwebchannel.js"></script>
+</head>
+<body>
+  <div class="viewport">
+    <!-- Technical Light Grid & Vignette -->
+    <div class="bg-grid"></div>
+    <div class="bg-vignette"></div>
+
+    <!-- Header: Editorial Title & Profile / Hardware Actions -->
+    <header class="header">
+      <div class="brand">
+        <div class="tag" id="headerTag">[ CORE SYSTEM // VER 0.3.0 ]</div>
+        <h1 class="title">RAMPAGE BLINK // DRIVER</h1>
+        <div class="subtitle" id="headerSubtitle">WUXI INSTANT A825 NATIVE HARDWARE ARCHITECTURE</div>
+        <div class="lang-switch-wrap">
+          <button class="lang-pill active" data-lang="en">EN</button>
+          <span class="lang-slash">/</span>
+          <button class="lang-pill" data-lang="tr">TR</button>
+        </div>
+      </div>
+
+      <div class="system-status">
+        <div class="profile-pill-group">
+          <span class="mono-label" id="lblProfile">PROFILE</span>
+          <button class="prof-btn active" data-prof="0">OFFICE</button>
+          <button class="prof-btn" data-prof="1">GAME I</button>
+          <button class="prof-btn" data-prof="2">GAME II</button>
+          <button class="prof-btn" data-prof="3">GAME III</button>
+        </div>
+
+        <button class="save-flash-btn" id="saveFlashBtn" title="Persist configuration into onboard EEPROM Flash">
+          <span class="btn-dot"></span>
+          <span class="btn-text" id="lblSaveFlash">SAVE TO FLASH</span>
+        </button>
+
+        <div class="status-badge" id="usbStatus">
+          <span class="status-dot"></span>
+          <span class="status-text">CONNECTED: /dev/hidraw5</span>
+        </div>
+      </div>
+    </header>
+
+    <!-- Center Stage: 3D Mouse & Floating HUD Nodes -->
+    <main class="stage" id="stage" data-active-tab="tab-keys">
+      <!-- 3D Mouse Container -->
+      <div class="mouse-stage">
+        <div class="mouse-3d-wrap" id="mouseWrap">
+          <img src="mouse.png" alt="Rampage Blink" class="mouse-img" id="mouseImg">
+          <div class="mouse-glow"></div>
+
+          <!-- Hardware Button Anchor Points -->
+          <div class="anchor-point ap-1" data-slot="1" style="left: 28%; top: 22%;" title="Left Click"></div>
+          <div class="anchor-point ap-2" data-slot="2" style="left: 50%; top: 22%;" title="Middle Click (Wheel)"></div>
+          <div class="anchor-point ap-3" data-slot="3" style="left: 72%; top: 22%;" title="Right Click"></div>
+          <div class="anchor-point ap-5" data-slot="5" style="left: 5%; top: 40%;" title="Forward Button"></div>
+          <div class="anchor-point ap-4" data-slot="4" style="left: 5%; top: 52%;" title="Backward Button"></div>
+          <div class="anchor-point ap-6" data-slot="6" style="left: 50%; top: 38%;" title="DPI Button"></div>
+        </div>
+      </div>
+
+      <!-- Floating Dynamic SVG HUD Lines -->
+      <svg class="hud-lines-svg" id="hudSvg"></svg>
+
+      <!-- TAB 1: KEYS -->
+      <div class="tab-content active" id="tab-keys">
+        <!-- Left Wing Nodes -->
+        <div class="hud-floating-node node-left nl-1" data-slot="1">
+          <div class="node-meta" data-slot-meta="1">[ SLOT 01 ]</div>
+          <div class="node-title" data-slot-title="1">LEFT CLICK</div>
+          <select class="hud-select" data-slot="1"></select>
+        </div>
+
+        <div class="hud-floating-node node-left nl-5" data-slot="5">
+          <div class="node-meta" data-slot-meta="5">[ SLOT 05 ]</div>
+          <div class="node-title" data-slot-title="5">FORWARD BUTTON</div>
+          <select class="hud-select" data-slot="5"></select>
+        </div>
+
+        <div class="hud-floating-node node-left nl-4" data-slot="4">
+          <div class="node-meta" data-slot-meta="4">[ SLOT 04 ]</div>
+          <div class="node-title" data-slot-title="4">BACKWARD BUTTON</div>
+          <select class="hud-select" data-slot="4"></select>
+        </div>
+
+        <!-- Right Wing Nodes -->
+        <div class="hud-floating-node node-right nr-2" data-slot="2">
+          <div class="node-meta" data-slot-meta="2">[ SLOT 02 ]</div>
+          <div class="node-title" data-slot-title="2">MIDDLE CLICK // WHEEL</div>
+          <select class="hud-select" data-slot="2"></select>
+        </div>
+
+        <div class="hud-floating-node node-right nr-3" data-slot="3">
+          <div class="node-meta" data-slot-meta="3">[ SLOT 03 ]</div>
+          <div class="node-title" data-slot-title="3">RIGHT CLICK</div>
+          <select class="hud-select" data-slot="3"></select>
+        </div>
+
+        <div class="hud-floating-node node-right nr-6" data-slot="6">
+          <div class="node-meta" data-slot-meta="6">[ SLOT 06 ]</div>
+          <div class="node-title" data-slot-title="6">DPI LOOP // FIRE</div>
+          <select class="hud-select" data-slot="6"></select>
+        </div>
+      </div>
+
+      <!-- TAB 2: SENSOR (DPI) -->
+      <div class="tab-content" id="tab-dpi">
+        <div class="hud-center-panel dpi-panel">
+          <div class="panel-header">
+            <span class="mono-label" id="lblSensorTag">[ OPTICAL SENSOR // 12800 MAX CPI ]</span>
+            <div class="dpi-current-display" id="dpiActiveDisplay">6400 CPI</div>
+          </div>
+
+          <div class="dpi-stages-container" id="dpiStagesList"></div>
+
+          <button class="hud-add-btn" id="dpiAddBtn">
+            <span class="plus-icon">+</span>
+            <span id="lblAddStage">ADD STAGE (MAX 3)</span>
+          </button>
+        </div>
+      </div>
+
+      <!-- TAB 3: LIGHTING (RGB) -->
+      <div class="tab-content" id="tab-rgb">
+        <div class="hud-center-panel rgb-panel">
+          <div class="rgb-controls-grid">
+            <!-- Custom Non-Native Dropdown (Wayland Friendly) -->
+            <div class="rgb-param-box">
+              <span class="mono-label" id="lblEffectMode">EFFECT MODE</span>
+              <div class="custom-dropdown" id="customModeDropdown">
+                <div class="dropdown-trigger" id="dropdownTrigger">
+                  <span class="dropdown-selected-text" id="selectedModeText">Flowing Stream (Water Flow)</span>
+                  <span class="dropdown-arrow">▾</span>
+                </div>
+                <div class="dropdown-menu" id="dropdownMenu"></div>
+              </div>
+            </div>
+
+            <div class="rgb-param-box" id="speedBox">
+              <div class="param-row">
+                <span class="mono-label" id="lblSpeed">SPEED</span>
+                <span class="mono-val" id="ledSpeedVal">5 / 8</span>
+              </div>
+              <input type="range" min="1" max="8" value="5" class="hud-slider" id="ledSpeedSlider">
+            </div>
+
+            <div class="rgb-param-box" id="brightBox">
+              <div class="param-row">
+                <span class="mono-label" id="lblBright">BRIGHTNESS</span>
+                <span class="mono-val" id="ledBrightVal">7 (MAX)</span>
+              </div>
+              <input type="range" min="0" max="7" value="7" class="hud-slider" id="ledBrightSlider">
+            </div>
+          </div>
+
+          <div class="rgb-palette-bar" id="paletteBar">
+            <div class="palette-header">
+              <span class="mono-label" id="paletteTitle">COLOR CONFIGURATION</span>
+              <span class="mono-val" id="selectedColorInfo">SLOT 1: #0011ff</span>
+            </div>
+
+            <!-- Dynamic Color Modes Container -->
+            <div id="dynamicColorArea"></div>
+
+            <!-- Hidden native color picker input -->
+            <input type="color" id="nativeColorPicker" style="position: absolute; opacity: 0; pointer-events: none; width: 0; height: 0;">
+
+            <!-- In-App Quick Color Swatches Palette -->
+            <div class="color-swatches-panel" id="swatchesPanel">
+              <span class="swatch-label" id="lblPresets">PRESETS:</span>
+              <div class="swatches-grid" id="swatchesGrid"></div>
+            </div>
+
+            <!-- In-App Precision RGB Color Mixer -->
+            <div class="rgb-mixer-panel" id="rgbMixer">
+              <div class="mixer-header">
+                <span class="mono-label" id="lblFineRgb">FINE RGB TUNING</span>
+                <span class="mono-val" id="mixerHexVal">#FF0000</span>
+              </div>
+              <div class="mixer-slider-row">
+                <span class="mixer-ch" style="color: #ef4444;">R</span>
+                <input type="range" min="0" max="255" value="255" class="hud-slider mixer-sld" id="mixR">
+                <span class="mono-val mixer-num" id="mixRVal">255</span>
+              </div>
+              <div class="mixer-slider-row">
+                <span class="mixer-ch" style="color: #22c55e;">G</span>
+                <input type="range" min="0" max="255" value="0" class="hud-slider mixer-sld" id="mixG">
+                <span class="mono-val mixer-num" id="mixGVal">0</span>
+              </div>
+              <div class="mixer-slider-row">
+                <span class="mixer-ch" style="color: #3b82f6;">B</span>
+                <input type="range" min="0" max="255" value="0" class="hud-slider mixer-sld" id="mixB">
+                <span class="mono-val mixer-num" id="mixBVal">0</span>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <!-- TAB 4: PERFORMANCE -->
+      <div class="tab-content" id="tab-perf">
+        <div class="hud-center-panel perf-panel">
+          <div class="perf-row">
+            <div class="perf-box">
+              <span class="mono-label" id="lblPolling">USB POLLING RATE</span>
+              <div class="segmented-pills" id="pollButtons">
+                <button data-hz="125">125 HZ</button>
+                <button data-hz="250">250 HZ</button>
+                <button data-hz="500">500 HZ</button>
+                <button data-hz="1000" class="active">1000 HZ</button>
+              </div>
+            </div>
+
+            <div class="perf-box">
+              <div class="param-row">
+                <span class="mono-label" id="lblFireTime">FIRE / CLICK INTERVAL</span>
+                <span class="mono-val" id="fireTimeVal">10 ms</span>
+              </div>
+              <input type="range" min="10" max="300" step="5" value="10" class="hud-slider" id="fireSlider">
+            </div>
+          </div>
+        </div>
+      </div>
+    </main>
+
+    <!-- Codemisk Floating Dock Navigation -->
+    <footer class="dock-container">
+      <nav class="codemisk-dock">
+        <div class="dock-pill-bg" id="dockIndicator"></div>
+        <button class="dock-item active" data-tab="tab-keys">
+          <span class="dock-code">01</span>
+          <span class="dock-label" id="dockLabelKeys">KEYS</span>
+        </button>
+        <button class="dock-item" data-tab="tab-dpi">
+          <span class="dock-code">02</span>
+          <span class="dock-label" id="dockLabelSensor">SENSOR (DPI)</span>
+        </button>
+        <button class="dock-item" data-tab="tab-rgb">
+          <span class="dock-code">03</span>
+          <span class="dock-label" id="dockLabelLighting">LIGHTING</span>
+        </button>
+        <button class="dock-item" data-tab="tab-perf">
+          <span class="dock-code">04</span>
+          <span class="dock-label" id="dockLabelPerf">PERFORMANCE</span>
+        </button>
+      </nav>
+    </footer>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

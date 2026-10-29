@@ -1,0 +1,132 @@
+name: Build and Release Binaries
+
+on:
+  push:
+    tags:
+      - 'v*'
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  build-linux:
+    name: Build Linux AppImage & Binary
+    runs-on: ubuntu-22.04
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install System Dependencies
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y libxcb-cursor0 libxkbcommon-x11-0 libegl1 libgl1 file
+
+      - name: Install Python Dependencies
+        run: |
+          pip install --upgrade pip
+          pip install pyinstaller PySide6
+
+      - name: Build Standalone Binary with PyInstaller
+        run: |
+          pyinstaller --noconfirm --onedir --windowed \
+            --name "rampage-blink" \
+            --icon "assets/mouse_pure_hq.png" \
+            --add-data "ui:ui" \
+            --add-data "assets:assets" \
+            gui.py
+
+      - name: Build AppImage
+        run: |
+          mkdir -p AppDir/usr/bin AppDir/usr/share/applications AppDir/usr/share/icons/hicolor/512x512/apps
+          cp -r dist/rampage-blink/* AppDir/usr/bin/
+          cp blink-mouse.desktop AppDir/
+          cp blink-mouse.desktop AppDir/usr/share/applications/
+          cp assets/mouse_pure_hq.png AppDir/blink-mouse.png
+          cp assets/mouse_pure_hq.png AppDir/usr/share/icons/hicolor/512x512/apps/blink-mouse.png
+          
+          cat << 'EOF' > AppDir/AppRun
+          #!/bin/sh
+          SELF=$(readlink -f "$0")
+          HERE=${SELF%/*}
+          export PATH="${HERE}/usr/bin:${PATH}"
+          export LD_LIBRARY_PATH="${HERE}/usr/lib:${LD_LIBRARY_PATH}"
+          exec "${HERE}/usr/bin/rampage-blink" "$@"
+          EOF
+          chmod +x AppDir/AppRun
+
+          wget https://github.com/AppImage/AppImageKit/releases/download/continuous/appimagetool-x86_64.AppImage -O appimagetool
+          chmod +x appimagetool
+          ./appimagetool --appimage-extract-and-run AppDir Rampage-Blink-x86_64.AppImage
+
+      - name: Upload Linux Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rampage-Blink-Linux
+          path: Rampage-Blink-x86_64.AppImage
+
+  build-windows:
+    name: Build Windows EXE
+    runs-on: windows-latest
+    steps:
+      - name: Checkout Repository
+        uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.11'
+
+      - name: Install Python Dependencies
+        run: |
+          python -m pip install --upgrade pip
+          pip install pyinstaller PySide6
+
+      - name: Build Windows Standalone EXE
+        shell: bash
+        run: |
+          pyinstaller --noconfirm --onefile --windowed \
+            --name "Rampage-Blink" \
+            --add-data "ui;ui" \
+            --add-data "assets;assets" \
+            gui.py
+
+      - name: Upload Windows Artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: Rampage-Blink-Windows
+          path: dist/Rampage-Blink.exe
+
+  release:
+    name: Publish GitHub Release
+    needs: [build-linux, build-windows]
+    if: startsWith(github.ref, 'refs/tags/')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Linux Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Rampage-Blink-Linux
+
+      - name: Download Windows Artifact
+        uses: actions/download-artifact@v4
+        with:
+          name: Rampage-Blink-Windows
+
+      - name: Create GitHub Release
+        uses: softprops/action-gh-release@v2
+        with:
+          name: Rampage Blink Driver ${{ github.ref_name }}
+          generate_release_notes: true
+          files: |
+            Rampage-Blink-x86_64.AppImage
+            Rampage-Blink.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
